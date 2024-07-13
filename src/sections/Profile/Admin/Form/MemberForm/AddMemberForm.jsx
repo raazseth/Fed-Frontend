@@ -157,9 +157,11 @@ function AddMemberForm() {
           containerStyle={{ width: "100%" }}
         />
       </div>
+      <div className={styles.formHead}>
       <Button onClick={onAddMember}>
         Add Member
       </Button>
+      </div>
     </div>
   );
 }

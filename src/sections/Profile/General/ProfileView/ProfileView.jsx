@@ -19,18 +19,13 @@ const Profile = ({ editmodal }) => {
 
   return (
     <div id={styles.profile}>
-      <div style={{ width: "85%", position: "relative" }}>
-        <div
-          style={{ position: "absolute", right: "0", top: "0", cursor: "pointer" }}
-          onClick={handleOpen}
-        >
-          <FiEdit />
-        </div>
-      </div>
       <div className={styles.proHeading}>
         <h3 className={styles.headInnerText}>
           <span>Profile</span> Details
         </h3>
+        <div  className={styles.editbtn} onClick={handleOpen}> 
+          <FiEdit/>
+        </div>
       </div>
       {authCtx.user && (
         <div className={styles.details}>

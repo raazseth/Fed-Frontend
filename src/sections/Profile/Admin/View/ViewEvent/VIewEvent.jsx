@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./styles/ViewEvent.module.scss";
-
+import AOS from "aos";
+import 'aos/dist/aos.css';
 import {Button, EventCard} from "../../../../../components";
 import FormData from "../../../../../data/FormData.json"
 
 
-
+// AOS.init({
+//   disable:true
+// })
 function ViewEvent() {
   const [activePage, setActivePage] = useState("View Events");
   const [pastEvents, setPastEvents] = useState([]);
@@ -18,7 +21,7 @@ function ViewEvent() {
         // const response = await axios.get("/api/form/getAllForms");
         // const fetchedEvents = response.data;
         // setPastEvents(fetchedEvents);
-        const testEvents=events.filter((event)=>!event.info.ongoingEvent)
+        const testEvents=events;
         setPastEvents(testEvents);
 
       } catch (error) {
@@ -27,6 +30,11 @@ function ViewEvent() {
     };
 
     fetchEventData();
+  }, []);
+
+   // Initialize AOS
+   useEffect(() => {
+    AOS.init();
   }, []);
 
   const customStyles = {
@@ -47,12 +55,9 @@ function ViewEvent() {
   return (
     <div className={styles.container}>
       <div className={styles.buttonContainer}>
-        <Button
-          onClick={() => setActivePage("View Events")}
-          variant={activePage === "View Events" ? "primary" : "secondary"}
-        >
-          View Events
-        </Button>
+        <h3 className={styles.headInnerText}>
+          <span>View</span> Event
+        </h3>
       </div>
 
       <form className={styles.form}>
@@ -66,8 +71,9 @@ function ViewEvent() {
                   type="past"
                    modalpath='/profile/Events/'
                   isPastpage={true}
+                  aosDisable={true}
                 />
-              </div>
+                </div>
             ))}
           </div>
         )}

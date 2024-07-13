@@ -4,20 +4,21 @@
   font-weight: 300;
   display: flex;
   flex-direction: column;
-  padding-left: 33px;
-  padding-top: 81px;
+  padding-left: 0px;
+  padding-top: 35px;
   padding-bottom: 27px;
-  
+  height: auto;
+
    
 .proHeading {
-    font-size: 38px;
-    letter-spacing: 0.02em;
-    line-height: 40px;
-    margin-bottom: 99px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  line-height: 40px;
+  margin-bottom: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   }
 
   .headInnerText span{
@@ -28,31 +29,57 @@
    
    }
 
-   .tables{
-    width: 100%;
+   .headInnerText{
+    margin-left: 10.5rem;
+  }
+
+  .tables{
     display: flex;
-    justify-content: center;
-   }
+    justify-content: start;
+    align-items: center;
+    width: 60%;
+    margin-left: 10.5rem;
+  }
   
     .eventsTable {
-      width: 70%;
+      width: 100%;
       border-collapse: collapse;
-      font-size: 25px;
 
       th{
         border-bottom: 2px solid grey;
         padding-bottom: 10px;
+        padding-top: 5px;
+        font-size: 20px;
+        // height: 39px;
       }
 
       td{
-        padding-top: 30px;
+        // padding-top: 30px;
+        font-size: 15px;
       }
   
       th, td {
         text-align: center;
+        width: 34%;
       }
+
     }
-  
+
+    .eventsTable thead,
+    .eventsTable tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    }
+
+    .eventsTable tbody {
+      display: block;
+      max-height: 360px;
+      overflow-y: scroll;
+      scrollbar-width: none;
+      width: 100%;
+  }
+
     .noEvents {
       text-align: center;
       font-size: 25px;
@@ -60,25 +87,74 @@
       color: grey;
     }
   }
+
+
+  @media screen and (max-width:989px) {
+    .participatedEvents .tables{
+      margin-left: 5rem;
+    }
+
+    .participatedEvents .headInnerText{
+      margin-left: 5rem;
+    }
+  }
+  
+  @media screen and (max-width:867px) {
+    .participatedEvents .tables{
+      margin-left: 2rem;
+    }
+
+    .participatedEvents .headInnerText{
+      margin-left: 2rem;
+    }
+  }
   
 
   @media screen and (max-width:768px) {
-    .participatedEvents {      
-      padding-left: 0px;
+    .participatedEvents .headInnerText{
+      text-align: center;
+      width: 100%;
+      margin-left: 10vw;
+      margin-right: 10vw;
+    }
+
+    .participatedEvents .eventsTable tbody {
+      max-height: 250px;
   }
+
+    .participatedEvents .proHeading{
+      margin-bottom: 20px;
+    }
+
+    .eventsTable{
+      margin-left: 3vw;
+      margin-right: 3vw;
+    }
+
+    .participatedEvents .tables{
+      width: 100%;
+      margin-left: 0rem;
+    }
 }
 
 @media screen and (max-width:515px) {
 
-   .headInnerText{
+  .participatedEvents .headInnerText{
+    margin-left: 5vw;
+    margin-right: 5vw;
+  }
+
+
+}
+
+
+@media screen and (max-width:480px) {
+
+  .participatedEvents .headInnerText{
     font-size: 30px;
-   }
+  }
 
-   .eventsTable td {
-    font-size: 20px;
-   }
-
-   .eventsTable{
-    margin-top: -30px;
-   }
+  .participatedEvents .eventsTable th{
+    font-size: 17px;
+  }
 }

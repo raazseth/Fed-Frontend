@@ -76,16 +76,16 @@ strong {
 
 
 
-// .circle {
-//   height: 50vh;
-//   width: 30vh;
-//   background-color: rgba(255, 92, 0, 0.19);
-//   position: absolute;
-//   top: 80%;
-//   left: -10%;
-//   border-radius: 50%;
-//   filter: blur(150px);
-// }
+.circle {
+  height: 50vh;
+  width: 30vh;
+  background-color: rgba(255, 92, 0, 0.19);
+  position: absolute;
+  top: 80%;
+  left: -10%;
+  border-radius: 50%;
+  filter: blur(150px);
+}
 
 // .circle2 {
 //   height: 50vh;
@@ -157,15 +157,15 @@ strong {
   //   // bottom: -200%;
   //   right: -25%;
   // }
-  // .circle {
-  //   left: -30%;
-  // }
+  .circle {
+    left: -30%;
+  }
 }
 
 @media (max-width: 768px) {
-  // .circle {
-  //   left: -20%;
-  // }
+  .circle {
+    left: -20%;
+  }
   // .circle2 {
   //   bottom: -500%;
   //   right: -20%;
@@ -219,10 +219,10 @@ strong {
   h2 {
     font-size: 40px;
   }
-  // .circle {
-  //   left: -30%;
-  //   background-color: rgba(255, 92, 0, 0.59);
-  // }
+  .circle {
+    left: -30%;
+    background-color: rgba(255, 92, 0, 0.59);
+  }
 
   .teamSection span {
     margin-left: 5px;

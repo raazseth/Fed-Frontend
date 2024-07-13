@@ -1,12 +1,32 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./styles/Preview.module.scss";
-import {Button} from "../../../../components";
+import { Button, Text } from "../../../../components";
 import Section from "./SectionModal";
-import { Link } from 'react-router-dom';
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import { Link } from "react-router-dom";
 import { X } from "lucide-react";
+import { getOutboundList } from "../../../../sections/Profile/Admin/Form/NewForm/NewForm";
+import Complete from "../../../../assets/images/Complete.svg";
 
-const PreviewForm = ({ sections, open, handleClose,showCloseBtn }) => {
+const operators = [
+  { label: "match", value: "===" },
+  { label: "match not", value: "!==" },
+  // { label: "contains", value: "includes" },
+  // { label: "does not contain", value: "!includes" },
+  { label: "less than", value: "<" },
+  { label: "greater than", value: ">" },
+  { label: "less than or equal to", value: "<=" },
+  { label: "greater than or equal to", value: ">=" },
+];
+const hasOptions = ["select", "checkbox", "radio"];
+
+const PreviewForm = ({
+  eventData,
+  sections = [],
+  open,
+  meta = [],
+  handleClose,
+  showCloseBtn,
+}) => {
   const [data, setdata] = useState(sections);
   const [activeSection, setactiveSection] = useState(
     data !== undefined ? data[0] : ""
@@ -14,6 +34,7 @@ const PreviewForm = ({ sections, open, handleClose,showCloseBtn }) => {
   const [isCompleted, setisCompleted] = useState([]);
   const [isLoading, setisLoading] = useState(false);
   const wrapperRef = useRef(null);
+
   let currentSection =
     data !== undefined
       ? data.find((section) => section._id === activeSection._id)
@@ -34,7 +55,7 @@ const PreviewForm = ({ sections, open, handleClose,showCloseBtn }) => {
     const newSections = data.map((section) => {
       return {
         ...section,
-        show: section._id === data[0]._id,
+        isDisabled: section._id !== data[0]._id,
         fields: section.fields.map((field) => {
           return {
             ...field,
@@ -84,234 +105,330 @@ const PreviewForm = ({ sections, open, handleClose,showCloseBtn }) => {
     });
 
     const newSections = updatedSections.map((section) => {
-      section.fields.forEach((fld) => {
-        const lastField = section.fields[section.fields.length - 1];
+      const isHavingFieldValidations = section?.validations?.filter(
+        (valid) => valid.field_id
+      );
 
-        if (lastField && lastField._id === fld._id) {
-          if (fld.validations.length > 0) {
-            fld.validations.forEach((validation) => {
-              const targetSection = updatedSections.find(
-                (sec) => sec._id === validation.target
-              );
+      let isMatched = false;
+      if (isHavingFieldValidations.length > 0) {
+        isMatched = isHavingFieldValidations.some((valid) => {
+          return section.fields.some((fld) => {
+            return fld.onChangeValue === valid.values;
+          });
+        });
+      }
 
-              if (targetSection) {
-                if (fld.type === "checkbox") {
-                  const conditions = validation.condition.split(",");
-                  if (
-                    conditions.length === 1 &&
-                    fld.onChangeValue.length === 1
-                  ) {
-                    targetSection.show = fld.onChangeValue.includes(
-                      validation.condition
-                    );
-                  } else if (
-                    conditions.length > 1 &&
-                    fld.onChangeValue.length > 1
-                  ) {
-                    const hasElem = conditions.filter((elm) =>
-                      fld.onChangeValue.includes(elm)
-                    );
-                    targetSection.show = hasElem.length > 0;
-                    updatedSections.forEach((sec) => {
-                      if (
-                        sec._id !== targetSection._id &&
-                        sec._id !== currentSection._id
-                      ) {
-                        sec.show = false;
-                      }
-                    });
-                  }
-                } else {
-                  targetSection.show =
-                    fld.onChangeValue?.trim() === validation.condition?.trim();
-                }
-              }
-            });
-          } else {
-            const currentSectionIndex = updatedSections.findIndex(
-              (sec) => sec._id === currentSection._id && sec.show
-            );
-            if (updatedSections[currentSectionIndex + 1] !== undefined) {
-              const isIncludedType = ["text", "number", "date"];
-              const nextSection = updatedSections[currentSectionIndex + 1];
-              const hasFieldWithValidations = nextSection.fields.some(
-                (fld) => fld.validations.length > 0
-              );
-              const nxtSecFields = nextSection.fields.some(
-                (fl) =>
-                  isIncludedType.includes(fl.type) &&
-                  fl.validations.length === 0
-              );
-              if (hasFieldWithValidations) {
-                nextSection.show = true;
-              } else if (nxtSecFields) {
-                nextSection.show = true;
-              }
-            } else {
-              console.log("no next section");
-            }
-          }
-        }
-      });
-      return section;
+      const nextSection = getOutboundList(data, section._id)?.nextSection;
+
+      return {
+        ...section,
+        isDisabled: !(isMatched && nextSection),
+      };
     });
 
     setdata(newSections);
   };
 
-
   const handleSubmit = () => {
-    console.log("Form data:", data);
-    alert("Form submitted! Check the console for form data.");
-  
-  };
+    const formData = new FormData();
 
-  const areRequiredFieldsFilled = () => {
-    if (currentSection) {
-      return currentSection.fields.every((field) => {
-        return !field.isRequired || field.onChangeValue;
-      });
-    }
-    return true;
-  };
-
-  const getNextSection = () => {
-    const currentSectionIndex = data.findIndex(
-      (sec) => sec._id === currentSection._id && sec.show
-    );
-    const nextSection = data.slice(currentSectionIndex + 1).find((sec) => {
-      if (sec.show) {
-        return sec;
+    data.forEach((section) => {
+      if (isCompleted.includes(section._id)) {
+        formData.append(`_id`, section._id);
+        formData.append(`name`, section.name);
+        section.fields.forEach((fld) => {
+          formData.append("field_id", fld._id);
+          formData.append("field_name", fld.name);
+          formData.append("field_value", fld.onChangeValue);
+        });
       }
     });
 
-    return nextSection || null;
+    formData.forEach((value, key) => {
+      console.log(key + " " + value);
+    });
+  };
+
+  const areRequiredFieldsFilled = () => {
+    let isFilled = {
+      status: true,
+      message: "",
+    };
+
+    if (currentSection) {
+      currentSection.fields.forEach((field) => {
+        if (field.isRequired && !field.onChangeValue) {
+          isFilled = {
+            status: false,
+            message: "Please fill all required fields",
+          };
+          return;
+        }
+
+        field.validations.forEach((valid) => {
+          if (valid.type === "length") {
+            if (!matchCondition(field, valid)) {
+              const op = operators.find((op) => op.value === valid.operator);
+              isFilled = {
+                status: false,
+                message: `${field.name} should ${op?.label} ${valid.type} ${valid.value}`,
+              };
+            }
+          }
+        });
+      });
+    }
+
+    if (!isFilled.status) {
+      alert(isFilled.message);
+      return false;
+    }
+
+    return true;
+  };
+
+  const matchCondition = (field, valid) => {
+    const fieldLength = hasOptions.includes(field.type)
+      ? field.onChangeValue.split(",").length
+      : field.onChangeValue.length;
+    const operator = valid?.operator;
+    const validLength =
+      valid.type === "length" ? Number(valid?.value) : valid?.value;
+
+    switch (operator) {
+      case "===":
+        return fieldLength === validLength;
+      case "!==":
+        return fieldLength !== validLength;
+      case "includes":
+        return field.onChangeValue?.includes(valid?.value);
+      case "!includes":
+        return !field.onChangeValue?.includes(valid.value);
+      case "<":
+        return fieldLength < validLength;
+      case ">":
+        return fieldLength > validLength;
+      case "<=":
+        return fieldLength <= validLength;
+      case ">=":
+        return fieldLength >= validLength;
+      default:
+        throw new Error(`Unsupported operator: ${operator}`);
+    }
+  };
+
+  const isMetaExist = () => {
+    const paymentSection = meta.find((sec) => sec.name === "Payment Details");
+    if (paymentSection) {
+      paymentSection.isDisabled = false;
+      paymentSection.validations[0].onBack = currentSection._id;
+      return paymentSection;
+    }
+    return null;
+  };
+
+  const inboundList = () => {
+    if (!currentSection) return null;
+    let nextSection = currentSection?.validations[0]?.onNext;
+    let backSection = currentSection.validations[0]?.onBack;
+    const isHavingFieldValidations = currentSection?.validations?.filter(
+      (valid) => valid.field_id
+    );
+
+    if (isHavingFieldValidations.length > 0) {
+      const isMatched = isHavingFieldValidations.find((valid) => {
+        return currentSection.fields?.find((fld) => {
+          return fld.onChangeValue === valid.values;
+        });
+      });
+
+      nextSection = isMatched ? isMatched?.onNext : nextSection;
+      backSection = isMatched ? isMatched?.onBack : backSection;
+    }
+
+    if (isMetaExist() && currentSection?.name === "Payment Details") {
+      const lastIsCompleted = isCompleted[isCompleted.length - 1];
+      backSection = lastIsCompleted;
+    }
+
+    return {
+      nextSection: data.find((sec) => sec._id === nextSection) || null,
+      backSection: data.find((sec) => sec._id === backSection) || null,
+    };
   };
 
   const onNext = () => {
-    const hasOptions = ["select", "checkbox", "radio"];
-
     if (!currentSection) {
       return false;
     }
 
     if (!areRequiredFieldsFilled()) {
-      alert("Please fill all fields");
       return false;
     }
 
-    const lastField = currentSection.fields[currentSection.fields.length - 1];
-
-    if (
-      lastField &&
-      hasOptions.includes(lastField.type) &&
-      lastField.onChangeValue
-    ) {
-      const validValidations = lastField.validations.filter((valid) => {
-        if (lastField.type === "checkbox") {
-          const conditions = valid.condition.split(",");
-          if (conditions.length === 1 && lastField.onChangeValue.length === 1) {
-            return lastField.onChangeValue.includes(valid.condition);
-          }
-
-          if (lastField.onChangeValue.length > 1 && conditions.length > 1) {
-            const hasElem = conditions.filter((elm) =>
-              lastField.onChangeValue.includes(elm)
-            );
-            return hasElem.length > 0;
-          }
-        } else {
-          return lastField.onChangeValue?.trim() === valid.condition?.trim();
-        }
-      });
-
-      const nextSectionValidation = validValidations.find(
-        (valid) => valid.target !== "Submit"
-      );
-
-      if (nextSectionValidation) {
-        const nextSection = data.find(
-          (sec) => sec._id === nextSectionValidation.target
-        );
-        setactiveSection(nextSection);
-        console.log("221");
-        setisCompleted((prev) => [...prev, currentSection._id]);
-        return true;
-      }
-
-      if (
-        validValidations.length === 0 ||
-        validValidations.some((valid) => valid.target === "Submit")
-      ) {
-        setisCompleted((prev) => [...prev, currentSection._id, "Done"]);
-        handleSubmit(); 
-        return true;
-      } else {
-        const nextSection = getNextSection();
-        if (nextSection !== null) {
-          setactiveSection(nextSection);
-          console.log("232");
-        } else {
-          setisCompleted((prev) => [...prev, currentSection._id, "Done"]);
-          handleSubmit(); 
-        }
-      }
-    } else {
-      const nextSection = getNextSection();
-      if (nextSection !== null) {
-        setactiveSection(nextSection);
-        setisCompleted((prev) => [...prev, currentSection._id]);
-      } else {
-        setisCompleted((prev) => [...prev, currentSection._id, "Done"]);
-        handleSubmit();
-      }
-      return true;
+    const { nextSection } = inboundList();
+    if (nextSection) {
+      setisCompleted((prev) => [...prev, currentSection._id]);
+      setactiveSection(nextSection);
     }
 
-    return false;
+    if (!nextSection || nextSection === "submit") {
+      setisCompleted((prev) => [...prev, currentSection._id, "Submitted"]);
+      return handleSubmit();
+    }
   };
 
   const onBack = () => {
-    const lastSection = data[isCompleted.length - 1];
-    const removeLastSection = data.find(
-      (section) =>
-        section._id === lastSection._id && isCompleted.includes(section._id)
-    );
-    setisCompleted((prev) => prev.filter((id) => id !== lastSection._id));
-    setactiveSection(removeLastSection);
+    const { backSection } = inboundList();
+    if (backSection) {
+      setisCompleted((prev) => prev.filter((id) => id !== backSection._id));
+      setactiveSection(backSection);
+    }
+  };
+
+  const renderPaymentScreen = () => {
+    const { eventType, receiverDetails, amount } = eventData;
+    if (eventType === "Paid" && currentSection.name === "Payment Details") {
+      return (
+        <div
+          style={{
+            margin: "8px auto",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {receiverDetails.media && (
+            <img
+              src={URL.createObjectURL(receiverDetails.media)}
+              alt={"QR-Code"}
+              style={{
+                width: 200,
+                height: 200,
+                objectFit: "contain",
+              }}
+            />
+          )}
+          <p
+            style={{
+              fontSize: 12,
+              marginTop: 12,
+              color: "lightgray",
+            }}
+          >
+            Make the payment of{" "}
+            <strong
+              style={{
+                color: "#fff",
+              }}
+            >
+              &#8377;{amount}
+            </strong>{" "}
+            using QR-Code or UPI Id{" "}
+            <strong
+              style={{
+                color: "#fff",
+              }}
+            >
+              {receiverDetails.upi}
+            </strong>
+          </p>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
     open && (
       <div className={styles.mainPreview}>
         <div ref={wrapperRef} className={styles.previewContainer}>
-       {showCloseBtn && <Link onClick={handleClose} to={'/Events'}>
-          <div className={styles.closeBtn}>
-            <X/>
-          </div>
-        </Link>
-        }
-          {!isCompleted.includes(currentSection._id) ? (
-            <Section section={currentSection} handleChange={handleChange} />
-          ) : (
-            <div>Submit</div>
+          {showCloseBtn && (
+            <Link onClick={handleClose} to={"/Events"}>
+              <div className={styles.closeBtn}>
+                <X />
+              </div>
+            </Link>
           )}
-          {!isCompleted.includes("Done") && (
+          <Text style={{ marginBottom: "20px" }}>
+            {eventData?.title || "Preview Event"}
+          </Text>
+          {!isCompleted.includes("Submitted") ? (
             <div
               style={{
-                display: "flex",
-                flexDirection: "row",
+                width: "100%",
               }}
             >
-              {data[isCompleted.length - 1] && (
-                <Button onClick={onBack}>Back</Button>
-              )}
+              <div>
+                <Text
+                  style={{
+                    alignSelf: "center",
+                  }}
+                  variant="secondary"
+                >
+                  {currentSection.name}
+                </Text>
+                <Text
+                  style={{
+                    cursor: "pointer",
+                    padding: "6px 0",
+                    fontSize: "11px",
+                    opacity: "0.4",
+                    marginBottom: "8px",
+                  }}
+                >
+                  {currentSection.description}
+                </Text>
+              </div>
+              {renderPaymentScreen()}
+              <Section section={currentSection} handleChange={handleChange} />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {inboundList() && inboundList().backSection && (
+                  <Button style={{ marginRight: "10px" }} onClick={onBack}>
+                    Back
+                  </Button>
+                )}
 
-              <Button onClick={onNext}>
-                {areRequiredFieldsFilled() && getNextSection() === null
-                  ? "Submit"
-                  : "Next"}
-              </Button>
+                <Button onClick={onNext}>
+                  {inboundList() && inboundList().nextSection
+                    ? "Next"
+                    : "Submit"}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                src={Complete}
+                alt="Complete"
+                style={{ width: "400px", height: "400px", margin: "auto" }}
+              />
+              <Text
+                variant={"secondary"}
+                style={{
+                  width: "60%",
+                  fontSize: "14px",
+                  alignSelf: "center",
+                  textAlign: "center",
+                  marginTop: "16px",
+                  userSelect: "none",
+                }}
+              >
+                Form Submitted Successfully! Thank you for your time.
+              </Text>
             </div>
           )}
         </div>

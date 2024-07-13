@@ -1,15 +1,37 @@
 
 .right {
-  max-width: 85%;
-  overflow-x: scroll;
+  width: 100%;
 }
 
 .mainMember {
   height: 100%;
   width: 100%;
-  position: relative;
-  overflow: hidden;
+  position:relative;
   padding: 2em 0;
+}
+
+.buttonContainer {
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  line-height: 40px;
+  padding-bottom:10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headInnerText{
+  margin-left: 3.5rem;
+  margin-top: 12px;
+}
+  
+.headInnerText span{
+  margin-right: 3px;
+  background: linear-gradient(to right , #d03e21 40%, #FF8A00 );
+  -webkit-background-clip: text;
+  color: transparent;
+  
 }
 
 .eventmember {
@@ -19,17 +41,25 @@
 }
 
 .buttons {
-  margin-top: 0.5vw;
+  margin-top: -5px;
   display: flex;
   justify-content: space-around;
+  height: auto;
+  flex-wrap: wrap;
+  margin-left: 3rem;
 }
 
 .buttons button {
-  padding: 8px 24px;
-  border-radius: 20px;
+  // padding: 0.5rem;
+  border-radius: 10px;
   border: 0.3px #969393 solid;
   color: #ffff;
-  margin-right: 1vw;
+  margin-right: 0px;
+  height: 3rem;
+  width: 6.5rem;
+  font-size: 1rem;
+  // margin-right: 5px;
+  margin-left: 10px;
   cursor: pointer;
 }
 
@@ -39,6 +69,12 @@
   gap: 32px;
   justify-content: center;
   padding: 10px 50px;
+  height: 360px;
+  margin-left: 2vw;
+  margin-right: 2vw;
+  overflow: hidden scroll;
+  scrollbar-width: none;
+  // background-color: pink;
 }
 
 @media (max-width: 1024px) {

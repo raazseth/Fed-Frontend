@@ -61,8 +61,8 @@ function ViewMember() {
         variant={menu === memberActivePage.toLowerCase() ? "primary" : "secondary"}
         onClick={() => setMemberActivePage(menu)}
         style={{
-          borderRadius: menu !== "add member" ? "20px" : "4px",
-          marginLeft: menu === "add member" ? "20px" : "0px",
+          borderRadius: menu !== "add member" ? "20px" : "10px",
+          marginLeft: menu === "add member" ? "0px" : "0px",
         }}
       >
         {menu}
@@ -90,12 +90,39 @@ function ViewMember() {
     });
   };
 
+  const customStyles = {
+    teamMember:{
+      height: "10rem",
+      width: "10rem",
+    },
+
+    teamMemberBackh5:{
+      fontSize: "1.1rem",
+    },
+
+    socialLinksa:{
+      fontSize: "2rem",
+    },
+    button:{
+      fontSize:"1rem"
+    },
+    knowPara:{
+      height:"10rem",
+    }
+    // Any other custom styles
+};
+
   const membersToDisplay = getMembersByPage();
 
   return (
     <div className={styles.mainMember}>
       <div className={styles.eventmember}>
-        <div className={styles.right}>
+        <div className={styles.right}> 
+            <div className={styles.buttonContainer}>
+              <h3 className={styles.headInnerText}>
+                <span>View</span> Member
+              </h3>
+            </div>   
           <div className={styles.buttons}>{renderButtons()}</div>
           {memberActivePage.toLowerCase() === "add member" ? (
             <AddMemberForm />
@@ -110,6 +137,7 @@ function ViewMember() {
                   title={member.extra.title}
                   role={member.access}
                   know={member.extra.know}
+                  customStyles={customStyles}
                 />
               ))}
             </div>

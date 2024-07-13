@@ -8,11 +8,29 @@
 }
 
 .buttonContainer {
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  line-height: 40px;
+  padding-bottom: 50px;
+  width: 100%;
   display: flex;
-  justify-content: left;
-  gap: 0.658rem;
-  margin-bottom: 2em;
+  align-items: center;
+  justify-content: space-between;
 }
+
+.headInnerText{
+  margin-left: 3.5rem;
+  margin-top: 12px;
+}
+  
+.headInnerText span{
+  margin-right: 3px;
+  background: linear-gradient(to right , #d03e21 40%, #FF8A00 );
+  -webkit-background-clip: text;
+  color: transparent;
+  
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -24,7 +42,28 @@
   flex-wrap: wrap;
   justify-content: space-around;
   row-gap: 2rem;
+  height: 420px;
+  overflow: hidden scroll;
 }
+
+.eventList::-webkit-scrollbar {
+  width: 10px;
+  height: 0px;
+  transition: .2s linear;
+  background-color: #292929;
+}
+
+.eventList::-webkit-scrollbar-thumb {
+  border-radius: 22px;
+  background: var(--primary);
+  // border: 1.5px solid hwb(0 11% 89%);
+}
+
+.eventList::-webkit-scrollbar-track {
+  padding: 0px 20px;
+  background-color: transparent;
+}
+
 .topSection {
   display: flex;
   flex-direction: row;

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { InstagramEmbed, LinkedInEmbed } from 'react-social-media-embed';
 import useDimensions from '../../hooks/useDimensions';
 import AnimatedBox from '../../assets/animations/socialPageAnimation';
@@ -50,6 +51,15 @@ const SocialEmbed = ({ type }) => {
       )}
     </AnimatedBox>
   );
+};
+
+SocialEmbed.propTypes = {
+  type: PropTypes.oneOf([
+    'instagramTopPost',
+    'instagramBottomPost',
+    'instagramReel',
+    'linkedInPost',
+  ]).isRequired,
 };
 
 export default SocialEmbed;

@@ -88,6 +88,7 @@ const Event = () => {
                     type="ongoing"
                     customStyles={customStyles}
                     modalpath='/Events/'
+                    aosDisable={false}
                   />
                 </div>
               ))}

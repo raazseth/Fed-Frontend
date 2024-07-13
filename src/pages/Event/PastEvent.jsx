@@ -71,6 +71,7 @@ const PastEvent = () => {
                   type="past"
                   // customStyles={customStyles}
                   modalpath='/pastEvents/'
+                  aosDisable={false}
                 />
 
                 

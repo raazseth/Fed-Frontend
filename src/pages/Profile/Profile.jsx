@@ -8,9 +8,9 @@ import AuthContext from '../../context/AuthContext';
 import style from "./styles/Profile.module.scss";
 
 const Profile = () => {
-  const [activePage, setActivePage] = useState("Profile");
+  const [activePage, setActivePage] = useState("Form");
   const authCtx = useContext(AuthContext);
-  const [designation, setDesignation] = useState("");
+  const [designation, setDesignation] = useState("Admin");
 
   useEffect(() => {
     const access = authCtx.user.access;
